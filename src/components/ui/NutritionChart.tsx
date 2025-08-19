@@ -56,7 +56,7 @@ export default function NutritionChart({ data, size = 'md' }: NutritionChartProp
   const currentSize = sizes[size];
 
   // 커스텀 툴팁
-  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: any[] }) => {
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; grams: number; percentage: number; value: number } }> }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
