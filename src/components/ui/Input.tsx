@@ -1,13 +1,22 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { InputHTMLAttributes, ReactNode, forwardRef } from 'react';
+import { ReactNode, forwardRef } from 'react';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputProps {
   label?: string;
   error?: string;
   icon?: ReactNode;
   glass?: boolean;
+  placeholder?: string;
+  value?: string | number;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  className?: string;
+  disabled?: boolean;
+  required?: boolean;
+  min?: string;
+  max?: string;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(({
@@ -16,7 +25,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   icon,
   glass = true,
   className = '',
-  ...props
+  placeholder,
+  value,
+  onChange,
+  type = 'text',
+  disabled = false,
+  required = false,
+  min,
+  max,
 }, ref) => {
   const baseStyles = 'w-full px-4 py-3 text-white placeholder-white/70 rounded-xl border transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink/50';
   
@@ -50,7 +66,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          {...props}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          type={type}
+          disabled={disabled}
+          required={required}
+          min={min}
+          max={max}
         />
       </div>
       
