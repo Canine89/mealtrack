@@ -27,15 +27,15 @@ export default function Button({
   const baseStyles = 'relative font-medium rounded-2xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variants = {
-    primary: 'bg-gradient-to-r from-pink via-lavender to-sage text-white shadow-lg hover:shadow-xl focus:ring-pink/50',
+    primary: 'bg-gradient-to-r from-bright-yellow to-warm-beige text-dark-blue shadow-lg hover:shadow-xl focus:ring-bright-yellow/50',
     secondary: 'bg-white/20 backdrop-blur-sm border border-white/30 text-white hover:bg-white/30 focus:ring-white/50',
     glass: 'glass-button text-white focus:ring-white/50'
   };
   
   const sizes = {
-    sm: 'px-4 py-2 text-sm',
-    md: 'px-6 py-3 text-base',
-    lg: 'px-8 py-4 text-lg'
+    sm: 'px-3 py-2 text-sm',
+    md: 'px-5 py-2.5 text-sm',
+    lg: 'px-6 py-3 text-base'
   };
 
   return (
@@ -49,11 +49,13 @@ export default function Button({
     >
       {isLoading ? (
         <div className="flex items-center justify-center space-x-2">
-          <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-4 h-4 border-2 border-dark-blue border-t-transparent rounded-full animate-spin"></div>
           <span>로딩중...</span>
         </div>
       ) : (
-        children
+        <div className="flex items-center justify-center space-x-2">
+          {children}
+        </div>
       )}
     </motion.button>
   );

@@ -9,6 +9,29 @@ export interface User {
   updated_at: string;
 }
 
+// 사용자 프로필 타입
+export interface UserProfile {
+  id: string;
+  email: string;
+  full_name?: string;
+  avatar_url?: string;
+  target_calories?: number;
+  height?: number;
+  weight?: number;
+  activity_level?: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+  created_at: string;
+  updated_at: string;
+}
+
+// 프로필 업데이트용 타입
+export interface ProfileUpdateData {
+  full_name?: string;
+  target_calories?: number;
+  height?: number;
+  weight?: number;
+  activity_level?: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
+}
+
 // 음식 관련 타입
 export interface Food {
   id: string;

@@ -88,14 +88,14 @@ export default function StatsPage() {
   const targetCalories = 2000;
 
   return (
-    <div className="min-h-screen p-4 pb-24">
+    <div className="p-4">
       {/* 배경 장식 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-10 w-32 h-32 bg-lavender/15 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-40 left-10 w-24 h-24 bg-pink/20 rounded-full blur-2xl animate-pulse delay-1000" />
+        <div className="absolute top-20 right-10 w-32 h-32 bg-warm-beige/15 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-40 left-10 w-24 h-24 bg-bright-yellow/20 rounded-full blur-2xl animate-pulse delay-1000" />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto space-y-6">
+      <div className="relative z-10 space-y-6">
         {/* 헤더 */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -111,7 +111,7 @@ export default function StatsPage() {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-white">통계</h1>
+              <h1 className="text-2xl font-bold text-white">통계</h1>
               <p className="text-white/70">나의 식단 분석</p>
             </div>
           </div>
@@ -133,7 +133,7 @@ export default function StatsPage() {
         {stats && (
           <>
             {/* 주요 지표 카드들 */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -141,8 +141,8 @@ export default function StatsPage() {
               >
                 <Card glassEffect="medium" className="p-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-full flex items-center justify-center">
-                      <Target className="w-5 h-5 text-green-400" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-dark-blue/20 to-warm-beige/20 rounded-full flex items-center justify-center">
+                      <Target className="w-5 h-5 text-dark-blue" />
                     </div>
                     <div>
                       <p className="text-white/60 text-sm">평균 칼로리</p>
@@ -159,8 +159,8 @@ export default function StatsPage() {
               >
                 <Card glassEffect="medium" className="p-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-full flex items-center justify-center">
-                      <Calendar className="w-5 h-5 text-purple-400" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-warm-beige/20 to-bright-yellow/20 rounded-full flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-warm-beige" />
                     </div>
                     <div>
                       <p className="text-white/60 text-sm">기록 일수</p>
@@ -177,8 +177,8 @@ export default function StatsPage() {
               >
                 <Card glassEffect="medium" className="p-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-orange-400/20 to-red-400/20 rounded-full flex items-center justify-center">
-                      <Award className="w-5 h-5 text-orange-400" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-bright-yellow/20 to-warm-beige/20 rounded-full flex items-center justify-center">
+                      <Award className="w-5 h-5 text-bright-yellow" />
                     </div>
                     <div>
                       <p className="text-white/60 text-sm">연속 기록</p>
@@ -195,8 +195,8 @@ export default function StatsPage() {
               >
                 <Card glassEffect="medium" className="p-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-400/20 to-cyan-400/20 rounded-full flex items-center justify-center">
-                      <TrendingUp className="w-5 h-5 text-blue-400" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-dark-blue/20 to-bright-yellow/20 rounded-full flex items-center justify-center">
+                      <TrendingUp className="w-5 h-5 text-dark-blue" />
                     </div>
                     <div>
                       <p className="text-white/60 text-sm">목표 달성률</p>
@@ -214,7 +214,7 @@ export default function StatsPage() {
               transition={{ delay: 0.3 }}
             >
               <Card glassEffect="medium" className="p-6">
-                <h3 className="text-xl font-semibold text-white mb-6">주간 칼로리 추이</h3>
+                <h3 className="text-lg font-semibold text-white mb-6">주간 칼로리 추이</h3>
                 
                 <div className="space-y-4">
                   {stats.weeklyData.map((data, index) => {
@@ -225,7 +225,7 @@ export default function StatsPage() {
                         <div className="flex-1">
                           <div className="w-full bg-white/10 rounded-full h-3">
                             <motion.div
-                              className="bg-gradient-to-r from-pink to-lavender h-3 rounded-full"
+                              className="bg-gradient-to-r from-bright-yellow to-warm-beige h-3 rounded-full"
                               initial={{ width: 0 }}
                               animate={{ width: `${Math.min(percentage, 100)}%` }}
                               transition={{ delay: 0.5 + index * 0.1, duration: 0.8 }}
@@ -259,22 +259,22 @@ export default function StatsPage() {
                 transition={{ delay: 0.4 }}
               >
                 <Card glassEffect="medium" className="p-6">
-                  <h3 className="text-xl font-semibold text-white mb-6">영양성분 분석</h3>
+                  <h3 className="text-lg font-semibold text-white mb-6">영양성분 분석</h3>
                   
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="space-y-6">
                     <div className="flex justify-center">
                       <NutritionChart data={totalNutrition} size="lg" />
                     </div>
                     
                     <div className="space-y-4">
-                      <div className="text-center lg:text-left">
-                        <h4 className="text-lg font-medium text-white mb-4">주요 영양소</h4>
+                      <div className="text-center">
+                        <h4 className="text-base font-medium text-white mb-4">주요 영양소</h4>
                       </div>
                       
                       {[
-                        { label: '단백질', value: totalNutrition.protein, color: 'from-blue-400 to-cyan-400', unit: 'g' },
-                        { label: '탄수화물', value: totalNutrition.carbs, color: 'from-green-400 to-emerald-400', unit: 'g' },
-                        { label: '지방', value: totalNutrition.fat, color: 'from-pink-400 to-rose-400', unit: 'g' }
+                        { label: '단백질', value: totalNutrition.protein, color: 'from-dark-blue to-warm-beige', unit: 'g' },
+                        { label: '탄수화물', value: totalNutrition.carbs, color: 'from-warm-beige to-bright-yellow', unit: 'g' },
+                        { label: '지방', value: totalNutrition.fat, color: 'from-bright-yellow to-warm-beige', unit: 'g' }
                       ].map((nutrient) => (
                         <div key={nutrient.label} className="space-y-2">
                           <div className="flex justify-between items-center">
@@ -302,7 +302,7 @@ export default function StatsPage() {
               transition={{ delay: 0.5 }}
             >
               <Card glassEffect="medium" className="p-6">
-                <h3 className="text-xl font-semibold text-white mb-4">💡 개선 제안</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">💡 개선 제안</h3>
                 
                 <div className="space-y-3">
                   {stats.averageCalories < targetCalories * 0.8 && (

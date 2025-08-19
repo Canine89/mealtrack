@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   ArrowLeft, 
@@ -8,12 +8,10 @@ import {
   Mail, 
   Target, 
   Activity, 
-  Bell, 
-  Shield, 
-  HelpCircle, 
   LogOut,
   Edit3,
-  Save
+  Save,
+  Loader2
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
@@ -21,44 +19,79 @@ import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Modal from '@/components/ui/Modal';
 import { useAuthStore } from '@/store/authStore';
-
-interface UserSettings {
-  name: string;
-  email: string;
-  targetCalories: number;
-  height: number;
-  weight: number;
-  activityLevel: 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active';
-  notifications: {
-    mealReminders: boolean;
-    dailyGoal: boolean;
-    weeklyReport: boolean;
-  };
-}
+import { useProfileStore } from '@/store/profileStore';
+import { ProfileUpdateData } from '@/types';
+import { toast } from '@/store/toastStore';
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, signOut } = useAuthStore();
+  const { profile, loading, updateProfile, ensureProfile } = useProfileStore();
+  
   const [editMode, setEditMode] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [saving, setSaving] = useState(false);
   
-  const [settings, setSettings] = useState<UserSettings>({
-    name: user?.user_metadata?.name || '사용자',
-    email: user?.email || 'user@example.com',
-    targetCalories: 2000,
-    height: 165,
-    weight: 60,
-    activityLevel: 'moderate',
-    notifications: {
-      mealReminders: true,
-      dailyGoal: true,
-      weeklyReport: false,
-    }
+  // 편집 중인 데이터
+  const [formData, setFormData] = useState<ProfileUpdateData>({
+    full_name: '',
+    target_calories: 2000,
+    height: 0,
+    weight: 0,
+    activity_level: 'moderate',
   });
 
-  const handleSave = () => {
-    // TODO: 실제 API 연동 시 서버에 저장
-    console.log('Settings saved:', settings);
+  // 프로필 데이터 로드
+  useEffect(() => {
+    if (user) {
+      ensureProfile(user.id, user.email!, user.user_metadata?.name);
+    }
+  }, [user, ensureProfile]);
+
+  // 프로필 데이터가 로드되면 폼 데이터 초기화
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        full_name: profile.full_name || '',
+        target_calories: profile.target_calories || 2000,
+        height: profile.height || 0,
+        weight: profile.weight || 0,
+        activity_level: profile.activity_level || 'moderate',
+      });
+    }
+  }, [profile]);
+
+  const handleSave = async () => {
+    if (!user || !profile) return;
+
+    setSaving(true);
+    try {
+      const success = await updateProfile(user.id, formData);
+      
+      if (success) {
+        toast.success('프로필이 성공적으로 업데이트되었습니다!');
+        setEditMode(false);
+      } else {
+        toast.error('프로필 업데이트에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('프로필 저장 오류:', error);
+      toast.error('프로필 저장 중 오류가 발생했습니다.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (profile) {
+      setFormData({
+        full_name: profile.full_name || '',
+        target_calories: profile.target_calories || 2000,
+        height: profile.height || 0,
+        weight: profile.weight || 0,
+        activity_level: profile.activity_level || 'moderate',
+      });
+    }
     setEditMode(false);
   };
 
@@ -75,26 +108,43 @@ export default function ProfilePage() {
     { value: 'very_active', label: '매우 활발함', description: '매일 격한 운동 또는 육체적 직업' },
   ];
 
-  const bmi = (settings.weight / Math.pow(settings.height / 100, 2)).toFixed(1);
-  
-  const getBMIStatus = (bmi: number) => {
-    if (bmi < 18.5) return { status: '저체중', color: 'text-blue-400' };
-    if (bmi < 25) return { status: '정상', color: 'text-green-400' };
-    if (bmi < 30) return { status: '과체중', color: 'text-yellow-400' };
-    return { status: '비만', color: 'text-red-400' };
+  // BMI 계산
+  const calculateBMI = () => {
+    if (!profile?.height || !profile?.weight) return { bmi: '0.0', status: '정보 없음', color: 'text-gray-400' };
+    
+    const heightInM = profile.height / 100;
+    const bmi = (profile.weight / Math.pow(heightInM, 2)).toFixed(1);
+    
+    const bmiNum = parseFloat(bmi);
+    if (bmiNum < 18.5) return { bmi, status: '저체중', color: 'text-blue-400' };
+    if (bmiNum < 25) return { bmi, status: '정상', color: 'text-green-400' };
+    if (bmiNum < 30) return { bmi, status: '과체중', color: 'text-yellow-400' };
+    return { bmi, status: '비만', color: 'text-red-400' };
   };
 
-  const bmiStatus = getBMIStatus(parseFloat(bmi));
+  const bmiInfo = calculateBMI();
+
+  // 로딩 중이면 로딩 표시
+  if (loading) {
+    return (
+      <div className="p-4 flex items-center justify-center min-h-[50vh]">
+        <div className="flex items-center space-x-3">
+          <Loader2 className="w-6 h-6 animate-spin text-white" />
+          <span className="text-white">프로필을 불러오는 중...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen p-4 pb-24">
+    <div className="p-4">
       {/* 배경 장식 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-10 w-32 h-32 bg-lavender/15 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-40 left-10 w-24 h-24 bg-pink/20 rounded-full blur-2xl animate-pulse delay-1000" />
+        <div className="absolute top-20 right-10 w-32 h-32 bg-warm-beige/15 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-40 left-10 w-24 h-24 bg-bright-yellow/20 rounded-full blur-2xl animate-pulse delay-1000" />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto space-y-6">
+      <div className="relative z-10 space-y-6">
         {/* 헤더 */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -110,28 +160,52 @@ export default function ProfilePage() {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-white">프로필</h1>
+              <h1 className="text-2xl font-bold text-white">프로필</h1>
               <p className="text-white/70">개인 정보 및 설정</p>
             </div>
           </div>
 
-          <Button
-            variant={editMode ? 'primary' : 'glass'}
-            size="sm"
-            onClick={() => editMode ? handleSave() : setEditMode(true)}
-          >
+          <div className="flex space-x-2">
             {editMode ? (
               <>
-                <Save className="w-4 h-4 mr-2" />
-                저장
+                <Button
+                  variant="glass"
+                  size="sm"
+                  onClick={handleCancel}
+                  disabled={saving}
+                >
+                  취소
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSave}
+                  disabled={saving}
+                >
+                  {saving ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      저장 중...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      저장
+                    </>
+                  )}
+                </Button>
               </>
             ) : (
-              <>
+              <Button
+                variant="glass"
+                size="sm"
+                onClick={() => setEditMode(true)}
+              >
                 <Edit3 className="w-4 h-4 mr-2" />
                 편집
-              </>
+              </Button>
             )}
-          </Button>
+          </div>
         </motion.div>
 
         {/* 프로필 카드 */}
@@ -147,17 +221,19 @@ export default function ProfilePage() {
               </div>
               
               <div className="flex-1 space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div>
                     <label className="block text-white/70 text-sm mb-2">이름</label>
                     {editMode ? (
                       <Input
-                        value={settings.name}
-                        onChange={(e) => setSettings({ ...settings, name: e.target.value })}
+                        value={formData.full_name || ''}
+                        onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
                         placeholder="이름을 입력하세요"
                       />
                     ) : (
-                      <p className="text-white font-medium">{settings.name}</p>
+                      <p className="text-white font-medium">
+                        {profile?.full_name || '이름 없음'}
+                      </p>
                     )}
                   </div>
                   
@@ -165,7 +241,7 @@ export default function ProfilePage() {
                     <label className="block text-white/70 text-sm mb-2">이메일</label>
                     <p className="text-white/80 flex items-center">
                       <Mail className="w-4 h-4 mr-2" />
-                      {settings.email}
+                      {profile?.email || user?.email}
                     </p>
                   </div>
                 </div>
@@ -186,18 +262,20 @@ export default function ProfilePage() {
               신체 정보
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-6">
               <div>
                 <label className="block text-white/70 text-sm mb-2">키 (cm)</label>
                 {editMode ? (
                   <Input
                     type="number"
-                    value={settings.height}
-                    onChange={(e) => setSettings({ ...settings, height: parseInt(e.target.value) })}
+                    value={formData.height || ''}
+                    onChange={(e) => setFormData({ ...formData, height: parseFloat(e.target.value) || 0 })}
                     placeholder="키를 입력하세요"
                   />
                 ) : (
-                  <p className="text-white font-medium">{settings.height} cm</p>
+                  <p className="text-white font-medium">
+                    {profile?.height ? `${profile.height} cm` : '정보 없음'}
+                  </p>
                 )}
               </div>
               
@@ -206,20 +284,22 @@ export default function ProfilePage() {
                 {editMode ? (
                   <Input
                     type="number"
-                    value={settings.weight}
-                    onChange={(e) => setSettings({ ...settings, weight: parseInt(e.target.value) })}
+                    value={formData.weight || ''}
+                    onChange={(e) => setFormData({ ...formData, weight: parseFloat(e.target.value) || 0 })}
                     placeholder="몸무게를 입력하세요"
                   />
                 ) : (
-                  <p className="text-white font-medium">{settings.weight} kg</p>
+                  <p className="text-white font-medium">
+                    {profile?.weight ? `${profile.weight} kg` : '정보 없음'}
+                  </p>
                 )}
               </div>
               
               <div>
                 <label className="block text-white/70 text-sm mb-2">BMI</label>
                 <div className="flex items-center space-x-2">
-                  <p className="text-white font-medium">{bmi}</p>
-                  <span className={`text-sm ${bmiStatus.color}`}>({bmiStatus.status})</span>
+                  <p className="text-white font-medium">{bmiInfo.bmi}</p>
+                  <span className={`text-sm ${bmiInfo.color}`}>({bmiInfo.status})</span>
                 </div>
               </div>
             </div>
@@ -244,12 +324,14 @@ export default function ProfilePage() {
                 {editMode ? (
                   <Input
                     type="number"
-                    value={settings.targetCalories}
-                    onChange={(e) => setSettings({ ...settings, targetCalories: parseInt(e.target.value) })}
+                    value={formData.target_calories || ''}
+                    onChange={(e) => setFormData({ ...formData, target_calories: parseInt(e.target.value) || 0 })}
                     placeholder="목표 칼로리를 입력하세요"
                   />
                 ) : (
-                  <p className="text-white font-medium">{settings.targetCalories} kcal</p>
+                  <p className="text-white font-medium">
+                    {profile?.target_calories || 2000} kcal
+                  </p>
                 )}
               </div>
               
@@ -262,12 +344,12 @@ export default function ProfilePage() {
                         <input
                           type="radio"
                           value={level.value}
-                          checked={settings.activityLevel === level.value}
-                          onChange={(e) => setSettings({ 
-                            ...settings, 
-                            activityLevel: e.target.value as UserSettings['activityLevel']
+                          checked={formData.activity_level === level.value}
+                          onChange={(e) => setFormData({ 
+                            ...formData, 
+                            activity_level: e.target.value as 'sedentary' | 'light' | 'moderate' | 'active' | 'very_active'
                           })}
-                          className="text-pink"
+                          className="text-bright-yellow"
                         />
                         <div>
                           <p className="text-white font-medium">{level.label}</p>
@@ -279,10 +361,10 @@ export default function ProfilePage() {
                 ) : (
                   <div>
                     <p className="text-white font-medium">
-                      {activityLevels.find(l => l.value === settings.activityLevel)?.label}
+                      {activityLevels.find(l => l.value === profile?.activity_level)?.label || '보통 활동'}
                     </p>
                     <p className="text-white/60 text-sm">
-                      {activityLevels.find(l => l.value === settings.activityLevel)?.description}
+                      {activityLevels.find(l => l.value === profile?.activity_level)?.description || '주 3-5회 적당한 운동'}
                     </p>
                   </div>
                 )}
@@ -291,95 +373,26 @@ export default function ProfilePage() {
           </Card>
         </motion.div>
 
-        {/* 알림 설정 */}
+        {/* 로그아웃 버튼 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
           <Card glassEffect="medium" className="p-6">
-            <h3 className="text-xl font-semibold text-white mb-6 flex items-center">
-              <Bell className="w-5 h-5 mr-2" />
-              알림 설정
-            </h3>
-            
-            <div className="space-y-4">
-              {[
-                { key: 'mealReminders', label: '식사 알림', description: '식사 시간에 알림을 받습니다' },
-                { key: 'dailyGoal', label: '일일 목표 알림', description: '목표 달성 현황을 알려줍니다' },
-                { key: 'weeklyReport', label: '주간 리포트', description: '주간 식단 분석 리포트를 받습니다' },
-              ].map((notification) => (
-                <div key={notification.key} className="flex items-center justify-between">
-                  <div>
-                    <p className="text-white font-medium">{notification.label}</p>
-                    <p className="text-white/60 text-sm">{notification.description}</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={settings.notifications[notification.key as keyof typeof settings.notifications]}
-                      onChange={(e) => setSettings({
-                        ...settings,
-                        notifications: {
-                          ...settings.notifications,
-                          [notification.key]: e.target.checked
-                        }
-                      })}
-                      className="sr-only peer"
-                      disabled={!editMode}
-                    />
-                    <div className="w-11 h-6 bg-gray-200/20 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-pink/50"></div>
-                  </label>
+            <button 
+              onClick={() => setShowLogoutModal(true)}
+              className="w-full flex items-center justify-between p-4 hover:bg-red-500/10 rounded-lg transition-colors group"
+            >
+              <div className="flex items-center space-x-3">
+                <LogOut className="w-5 h-5 text-red-400" />
+                <div className="text-left">
+                  <p className="text-red-400 font-medium">로그아웃</p>
+                  <p className="text-white/60 text-sm">계정에서 로그아웃합니다</p>
                 </div>
-              ))}
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* 추가 옵션 */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <Card glassEffect="medium" className="p-6">
-            <div className="space-y-4">
-              <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 rounded-lg transition-colors">
-                <div className="flex items-center space-x-3">
-                  <Shield className="w-5 h-5 text-white/70" />
-                  <div className="text-left">
-                    <p className="text-white font-medium">개인정보 보호</p>
-                    <p className="text-white/60 text-sm">데이터 사용 및 보호 정책</p>
-                  </div>
-                </div>
-                <ArrowLeft className="w-4 h-4 text-white/40 rotate-180" />
-              </button>
-
-              <button className="w-full flex items-center justify-between p-4 hover:bg-white/5 rounded-lg transition-colors">
-                <div className="flex items-center space-x-3">
-                  <HelpCircle className="w-5 h-5 text-white/70" />
-                  <div className="text-left">
-                    <p className="text-white font-medium">도움말 및 지원</p>
-                    <p className="text-white/60 text-sm">사용법 및 문의사항</p>
-                  </div>
-                </div>
-                <ArrowLeft className="w-4 h-4 text-white/40 rotate-180" />
-              </button>
-
-              <button 
-                onClick={() => setShowLogoutModal(true)}
-                className="w-full flex items-center justify-between p-4 hover:bg-red-500/10 rounded-lg transition-colors group"
-              >
-                <div className="flex items-center space-x-3">
-                  <LogOut className="w-5 h-5 text-red-400" />
-                  <div className="text-left">
-                    <p className="text-red-400 font-medium">로그아웃</p>
-                    <p className="text-white/60 text-sm">계정에서 로그아웃합니다</p>
-                  </div>
-                </div>
-                <ArrowLeft className="w-4 h-4 text-red-400 rotate-180" />
-              </button>
-            </div>
+              </div>
+              <ArrowLeft className="w-4 h-4 text-red-400 rotate-180" />
+            </button>
           </Card>
         </motion.div>
       </div>

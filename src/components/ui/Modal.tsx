@@ -70,7 +70,7 @@ export default function Modal({
           >
             {/* Header */}
             <div className="flex items-center justify-between p-6 pb-4">
-              <h2 className="text-2xl font-bold text-white">{title}</h2>
+              <h2 className="text-xl font-bold text-white">{title}</h2>
               <Button
                 variant="glass"
                 size="sm"

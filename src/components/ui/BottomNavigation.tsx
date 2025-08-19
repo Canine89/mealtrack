@@ -27,9 +27,9 @@ export default function BottomNavigation() {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-40">
-      <div className="glass-nav mx-4 mb-4 rounded-2xl">
-        <div className="flex items-center justify-around py-3 px-6">
+    <div className="p-4">
+      <div className="glass-nav rounded-2xl">
+        <div className="flex items-center justify-around py-2 px-4">
           {navItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = pathname === item.path;
@@ -38,10 +38,10 @@ export default function BottomNavigation() {
               <motion.button
                 key={item.path}
                 onClick={() => router.push(item.path)}
-                className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-xl transition-all duration-300 ${
+                className={`flex flex-col items-center space-y-1 py-1.5 px-2 rounded-xl transition-all duration-300 ${
                   isActive 
-                    ? 'bg-white/20 text-white' 
-                    : 'text-white/60 hover:text-white hover:bg-white/10'
+                    ? 'bg-bright-yellow/20 text-white shadow-md' 
+                    : 'text-white/60 hover:text-white hover:bg-warm-beige/15'
                 }`}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -50,13 +50,13 @@ export default function BottomNavigation() {
                 transition={{ delay: index * 0.1 }}
               >
                 <Icon className="w-5 h-5" />
-                <span className="text-xs font-medium">{item.label}</span>
+                <span className="text-xs font-normal">{item.label}</span>
                 
                 {/* 활성 상태 인디케이터 */}
                 {isActive && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute -top-1 w-1 h-1 bg-pink rounded-full"
+                    className="absolute -top-1 w-1 h-1 bg-bright-yellow rounded-full shadow-lg shadow-bright-yellow/50"
                     initial={false}
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
@@ -68,7 +68,7 @@ export default function BottomNavigation() {
         
         {/* 홈 인디케이터 (iPhone 스타일) */}
         <div className="flex justify-center pb-2">
-          <div className="w-36 h-1 bg-white/20 rounded-full" />
+          <div className="w-36 h-1 bg-warm-beige/30 rounded-full" />
         </div>
       </div>
     </div>

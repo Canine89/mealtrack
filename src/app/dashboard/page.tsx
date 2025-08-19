@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Settings, Plus } from 'lucide-react';
+import { Calendar, Plus } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import NutritionChart from '@/components/ui/NutritionChart';
@@ -10,19 +10,22 @@ import { MealItemCard } from '@/components/meal';
 import AddFoodModal from '@/components/forms/AddFoodModal';
 import { useAuthStore } from '@/store/authStore';
 import { useMealStore } from '@/store/mealStore';
+import { useProfileStore } from '@/store/profileStore';
 import { MealType } from '@/types';
 
 export default function DashboardPage() {
-  const { user, signOut } = useAuthStore();
-  const { meals, currentDate, fetchMeals, getTotalCalories, removeMealItem } = useMealStore();
+  const { user } = useAuthStore();
+  const { meals, loading, currentDate, fetchMeals, getTotalCalories, removeMealItem } = useMealStore();
+  const { profile, ensureProfile } = useProfileStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
 
   useEffect(() => {
     if (user) {
       fetchMeals(currentDate, user.id);
+      ensureProfile(user.id, user.email!, user.user_metadata?.name);
     }
-  }, [user, currentDate, fetchMeals]);
+  }, [user, currentDate, fetchMeals, ensureProfile]);
 
   const mealTypes = [
     { 
@@ -30,33 +33,33 @@ export default function DashboardPage() {
       title: '아침', 
       emoji: '🌅', 
       time: '07:00-09:00',
-      gradient: 'from-orange-400/20 to-yellow-400/20'
+      gradient: 'from-bright-yellow/20 to-warm-beige/20'
     },
     { 
       type: 'lunch' as const, 
       title: '점심', 
       emoji: '☀️', 
       time: '12:00-14:00',
-      gradient: 'from-green-400/20 to-blue-400/20'
+      gradient: 'from-warm-beige/20 to-dark-blue/20'
     },
     { 
       type: 'dinner' as const, 
       title: '저녁', 
       emoji: '🌙', 
       time: '18:00-20:00',
-      gradient: 'from-purple-400/20 to-pink-400/20'
+      gradient: 'from-dark-blue/20 to-warm-beige/20'
     },
     { 
       type: 'snack' as const, 
       title: '간식', 
       emoji: '🍎', 
       time: '언제든지',
-      gradient: 'from-pink-400/20 to-rose-400/20'
+      gradient: 'from-bright-yellow/15 to-off-white/20'
     }
   ];
 
   const totalCalories = getTotalCalories();
-  const targetCalories = 2000; // 나중에 사용자 설정으로 변경
+  const targetCalories = profile?.target_calories || 2000;
   const calorieProgress = Math.min((totalCalories / targetCalories) * 100, 100);
 
   // 음식 추가 모달 열기
@@ -99,36 +102,37 @@ export default function DashboardPage() {
   const totalNutrition = getTotalNutrition();
 
   return (
-    <div className="min-h-screen p-4 pb-24">
+    <div className="p-4">
       {/* 배경 장식 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-10 right-10 w-32 h-32 bg-pink/15 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 left-10 w-24 h-24 bg-lavender/20 rounded-full blur-2xl animate-pulse delay-1000" />
+        <div className="absolute top-10 right-10 w-32 h-32 bg-warm-beige/15 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 left-10 w-24 h-24 bg-bright-yellow/20 rounded-full blur-2xl animate-pulse delay-1000" />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto space-y-6">
+      <div className="relative z-10 space-y-6">
         {/* 헤더 */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between"
+          className="space-y-4"
         >
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              안녕하세요, {user?.user_metadata?.name || user?.email}님! 👋
-            </h1>
-            <p className="text-white/70">
-              오늘도 건강한 하루 보내세요
-            </p>
-          </div>
-          
-          <div className="flex items-center space-x-3">
-            <Button variant="glass" size="sm">
+          {/* 상단: 인사말과 날짜 */}
+          <div className="flex items-start justify-between">
+            <div className="flex-1 pr-4">
+              <h1 className="text-xl font-bold text-white mb-1 leading-tight">
+                안녕하세요, {profile?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || '사용자'}님! 👋
+              </h1>
+              <p className="text-white/70 text-sm">
+                오늘도 건강한 하루 보내세요
+              </p>
+            </div>
+            
+            <Button variant="glass" size="sm" className="flex-shrink-0">
               <Calendar className="w-4 h-4 mr-2" />
-              {new Date(currentDate).toLocaleDateString('ko-KR')}
-            </Button>
-            <Button variant="glass" size="sm" onClick={signOut}>
-              <Settings className="w-4 h-4" />
+              {new Date(currentDate).toLocaleDateString('ko-KR', { 
+                month: 'short', 
+                day: 'numeric' 
+              })}
             </Button>
           </div>
         </motion.div>
@@ -141,9 +145,9 @@ export default function DashboardPage() {
         >
           <Card glassEffect="medium" className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-white">오늘의 칼로리</h3>
+              <h3 className="text-lg font-semibold text-white">오늘의 칼로리</h3>
               <div className="text-right">
-                <p className="text-3xl font-bold text-white">{totalCalories}</p>
+                <p className="text-2xl font-bold text-white">{totalCalories}</p>
                 <p className="text-white/70 text-sm">/ {targetCalories} kcal</p>
               </div>
             </div>
@@ -151,7 +155,7 @@ export default function DashboardPage() {
             {/* 프로그레스 바 */}
             <div className="w-full bg-white/10 rounded-full h-3 mb-2">
               <motion.div
-                className="bg-gradient-to-r from-pink to-lavender h-3 rounded-full"
+                className="bg-gradient-to-r from-bright-yellow to-warm-beige h-3 rounded-full"
                 initial={{ width: 0 }}
                 animate={{ width: `${calorieProgress}%` }}
                 transition={{ delay: 0.5, duration: 0.8, ease: "easeOut" }}
@@ -172,7 +176,7 @@ export default function DashboardPage() {
           >
             <Card glassEffect="medium" className="p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold text-white">영양성분</h3>
+                <h3 className="text-lg font-semibold text-white">영양성분</h3>
                 <div className="text-white/60 text-sm">
                   오늘 섭취량
                 </div>
@@ -186,7 +190,7 @@ export default function DashboardPage() {
         )}
 
         {/* 식사 카드들 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           {mealTypes.map((mealType, index) => {
             const meal = meals.find(m => m.meal_type === mealType.type);
             const mealCalories = meal?.meal_items.reduce((sum, item) => sum + item.calories, 0) || 0;
@@ -205,7 +209,7 @@ export default function DashboardPage() {
                         {mealType.emoji}
                       </div>
                       <div>
-                        <h4 className="text-lg font-semibold text-white">{mealType.title}</h4>
+                        <h4 className="text-base font-semibold text-white">{mealType.title}</h4>
                         <p className="text-white/60 text-sm">{mealType.time}</p>
                       </div>
                     </div>
@@ -220,7 +224,12 @@ export default function DashboardPage() {
                   </div>
 
                   <div className="space-y-2 min-h-[60px]">
-                    {meal?.meal_items.length ? (
+                    {loading ? (
+                      <div className="flex items-center justify-center py-4">
+                        <div className="w-4 h-4 border-2 border-bright-yellow border-t-transparent rounded-full animate-spin"></div>
+                        <span className="ml-2 text-white/50 text-sm">불러오는 중...</span>
+                      </div>
+                    ) : meal?.meal_items.length ? (
                       meal.meal_items.map((item, itemIndex) => (
                         <MealItemCard
                           key={item.id}

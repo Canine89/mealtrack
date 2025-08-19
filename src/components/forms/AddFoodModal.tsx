@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Plus, Apple, Wheat, Beef, Milk, Carrot, Cookie } from 'lucide-react';
 import { Button, Input, Modal } from '@/components/ui';
-import { mockFoods } from '@/lib/mockData';
+import { supabase } from '@/lib/supabase';
 import { Food, MealType, FoodCategory } from '@/types';
 import { useMealStore } from '@/store/mealStore';
 import { useAuthStore } from '@/store/authStore';
@@ -20,23 +20,51 @@ export default function AddFoodModal({ isOpen, onClose, mealType }: AddFoodModal
   const [selectedFood, setSelectedFood] = useState<Food | null>(null);
   const [quantity, setQuantity] = useState('100');
   const [loading, setLoading] = useState(false);
+  const [foods, setFoods] = useState<Food[]>([]);
+  const [foodsLoading, setFoodsLoading] = useState(false);
   
   const { addMealItem } = useMealStore();
   const { user } = useAuthStore();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // 모달이 열릴 때 검색 인풋에 포커스
+  // 모달이 열릴 때 검색 인풋에 포커스 및 음식 데이터 로드
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
         searchInputRef.current?.focus();
       }, 300);
+      
+      // 음식 데이터 로드
+      loadFoods();
     }
   }, [isOpen]);
 
+  // Supabase에서 음식 데이터 로드
+  const loadFoods = async () => {
+    setFoodsLoading(true);
+    try {
+      const { data: foods, error } = await supabase
+        .from('foods')
+        .select('*')
+        .order('name', { ascending: true });
+
+      if (error) {
+        console.error('Failed to load foods:', error);
+        return;
+      }
+
+      setFoods(foods || []);
+    } catch (error) {
+      console.error('Error loading foods:', error);
+    } finally {
+      setFoodsLoading(false);
+    }
+  };
+
   // 검색된 음식 필터링
-  const filteredFoods = mockFoods.filter(food =>
-    food.name.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredFoods = foods.filter(food =>
+    food.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (food.name_en && food.name_en.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   // 카테고리별 아이콘
@@ -119,14 +147,19 @@ export default function AddFoodModal({ isOpen, onClose, mealType }: AddFoodModal
 
         {/* 음식 목록 */}
         <div className="max-h-64 overflow-y-auto space-y-2">
-          {filteredFoods.length > 0 ? (
+          {foodsLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="w-6 h-6 border-2 border-bright-yellow border-t-transparent rounded-full animate-spin"></div>
+              <span className="ml-2 text-white/70">음식 데이터를 불러오는 중...</span>
+            </div>
+          ) : filteredFoods.length > 0 ? (
             filteredFoods.map((food) => (
               <motion.button
                 key={food.id}
                 onClick={() => setSelectedFood(food)}
                 className={`w-full p-4 rounded-xl text-left transition-all duration-200 ${
                   selectedFood?.id === food.id
-                    ? 'bg-pink/20 border-2 border-pink/50'
+                    ? 'bg-bright-yellow/20 border-2 border-bright-yellow/50'
                     : 'bg-white/5 border border-white/10 hover:bg-white/10'
                 }`}
                 whileHover={{ scale: 1.02 }}
@@ -246,8 +279,8 @@ export default function AddFoodModal({ isOpen, onClose, mealType }: AddFoodModal
             isLoading={loading}
             disabled={!selectedFood}
           >
-            <Plus className="w-4 h-4 mr-2" />
-            추가하기
+            <Plus className="w-4 h-4" />
+            <span>추가하기</span>
           </Button>
         </div>
       </div>

@@ -49,14 +49,14 @@ export default function CalendarPage() {
   });
 
   return (
-    <div className="min-h-screen p-4 pb-24">
+    <div className="p-4">
       {/* 배경 장식 */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 right-10 w-32 h-32 bg-lavender/15 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-40 left-10 w-24 h-24 bg-pink/20 rounded-full blur-2xl animate-pulse delay-1000" />
+        <div className="absolute top-20 right-10 w-32 h-32 bg-warm-beige/15 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-40 left-10 w-24 h-24 bg-bright-yellow/20 rounded-full blur-2xl animate-pulse delay-1000" />
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto space-y-6">
+      <div className="relative z-10 space-y-6">
         {/* 헤더 */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -72,7 +72,7 @@ export default function CalendarPage() {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-white">캘린더</h1>
+              <h1 className="text-2xl font-bold text-white">캘린더</h1>
               <p className="text-white/70">식단 기록 보기</p>
             </div>
           </div>
@@ -86,27 +86,25 @@ export default function CalendarPage() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* 캘린더 */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-            className="lg:col-span-2"
-          >
-            <Calendar
-              selectedDate={selectedDate}
-              onDateSelect={handleDateSelect}
-            />
-          </motion.div>
+        {/* 캘린더 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Calendar
+            selectedDate={selectedDate}
+            onDateSelect={handleDateSelect}
+          />
+        </motion.div>
 
-          {/* 선택된 날짜 정보 */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="space-y-4"
-          >
+        {/* 선택된 날짜 정보 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="space-y-4"
+        >
             {/* 날짜 정보 */}
             <Card glassEffect="medium" className="p-6">
               <h3 className="text-lg font-semibold text-white mb-4">
@@ -197,8 +195,7 @@ export default function CalendarPage() {
                 </div>
               </Card>
             )}
-          </motion.div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

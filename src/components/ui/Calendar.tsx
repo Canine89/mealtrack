@@ -123,8 +123,8 @@ export default function Calendar({ selectedDate, onDateSelect, className = '' }:
                     aspect-square flex items-center justify-center text-sm rounded-lg
                     transition-all duration-200 relative
                     ${isCurrentMonthDate ? 'text-white' : 'text-white/30'}
-                    ${isTodayDate ? 'bg-pink/30 border border-pink/50 font-bold' : ''}
-                    ${isSelectedDate ? 'bg-lavender/40 border border-lavender/60 font-semibold' : ''}
+                    ${isTodayDate ? 'bg-bright-yellow/30 border border-bright-yellow/50 font-bold' : ''}
+                    ${isSelectedDate ? 'bg-warm-beige/40 border border-warm-beige/60 font-semibold' : ''}
                     ${!isTodayDate && !isSelectedDate ? 'hover:bg-white/10' : ''}
                   `}
                   whileHover={{ scale: 1.1 }}
@@ -134,7 +134,7 @@ export default function Calendar({ selectedDate, onDateSelect, className = '' }:
                   
                   {/* 오늘 표시 점 */}
                   {isTodayDate && !isSelectedDate && (
-                    <div className="absolute bottom-1 w-1 h-1 bg-pink rounded-full" />
+                    <div className="absolute bottom-1 w-1 h-1 bg-bright-yellow rounded-full" />
                   )}
                 </motion.button>
               );
@@ -146,11 +146,11 @@ export default function Calendar({ selectedDate, onDateSelect, className = '' }:
       {/* 범례 */}
       <div className="flex justify-center space-x-4 mt-4 text-xs text-white/60">
         <div className="flex items-center space-x-1">
-          <div className="w-2 h-2 bg-pink/50 rounded-full" />
+          <div className="w-2 h-2 bg-bright-yellow/50 rounded-full" />
           <span>오늘</span>
         </div>
         <div className="flex items-center space-x-1">
-          <div className="w-2 h-2 bg-lavender/50 rounded-full" />
+          <div className="w-2 h-2 bg-warm-beige/50 rounded-full" />
           <span>선택됨</span>
         </div>
       </div>

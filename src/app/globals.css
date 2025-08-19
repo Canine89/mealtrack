@@ -4,18 +4,24 @@
   --background: #ffffff;
   --foreground: #171717;
   
-  /* Glassmorphism colors */
-  --glass-background: rgba(255, 255, 255, 0.25);
-  --glass-background-dark: rgba(255, 255, 255, 0.1);
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-shadow: rgba(31, 38, 135, 0.37);
+  /* Glassmorphism colors optimized for ColorHunt palette */
+  --glass-background: rgba(247, 247, 247, 0.25);
+  --glass-background-dark: rgba(247, 247, 247, 0.1);
+  --glass-border: rgba(247, 247, 247, 0.3);
+  --glass-shadow: rgba(51, 56, 160, 0.2);
   
-  /* Gradient backgrounds */
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-morning: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+  /* ColorHunt Palette - https://colorhunt.co/palette/3338a0c59560fcc61df7f7f7 */
+  --dark-blue: #3338A0;
+  --warm-beige: #C59560;
+  --bright-yellow: #FCC61D;
+  --off-white: #F7F7F7;
   
-  /* Theme colors */
+  /* Gradient backgrounds with new palette */
+  --gradient-primary: linear-gradient(135deg, #3338A0 0%, #C59560 100%);
+  --gradient-secondary: linear-gradient(135deg, #FCC61D 0%, #C59560 100%);
+  --gradient-morning: linear-gradient(135deg, #F7F7F7 0%, #C59560 100%);
+  
+  /* Legacy theme colors (deprecated - use new palette) */
   --sage-green: #A8C090;
   --warm-pink: #F4A6CD;
   --lavender: #B8A9D9;
@@ -34,7 +40,13 @@
   --color-glass-dark: var(--glass-background-dark);
   --color-glass-border: var(--glass-border);
   
-  /* Theme colors */
+  /* New ColorHunt Palette */
+  --color-dark-blue: var(--dark-blue);
+  --color-warm-beige: var(--warm-beige);
+  --color-bright-yellow: var(--bright-yellow);
+  --color-off-white: var(--off-white);
+  
+  /* Legacy theme colors (deprecated) */
   --color-sage: var(--sage-green);
   --color-pink: var(--warm-pink);
   --color-lavender: var(--lavender);
@@ -44,10 +56,16 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #1a1a1a;
     --foreground: #ededed;
-    --glass-background: rgba(255, 255, 255, 0.1);
-    --glass-background-dark: rgba(255, 255, 255, 0.05);
+    --glass-background: rgba(197, 149, 96, 0.15);
+    --glass-background-dark: rgba(197, 149, 96, 0.08);
+    --glass-border: rgba(252, 198, 29, 0.2);
+    --glass-shadow: rgba(51, 56, 160, 0.3);
+    
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, #2a2d7a 0%, #8b6f47 100%);
+    --gradient-secondary: linear-gradient(135deg, #b8930f 0%, #8b6f47 100%);
   }
 }
 
@@ -56,6 +74,53 @@ body {
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   min-height: 100vh;
+}
+
+/* 모바일 우선 레이아웃 - PC에서도 모바일 화면으로 고정 */
+.mobile-container {
+  max-width: 430px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--gradient-primary);
+  overflow: hidden;
+}
+
+.content-wrapper {
+  flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+}
+
+.navigation-wrapper {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 40;
+}
+
+/* 데스크톱에서 중앙 정렬 및 모바일 시뮬레이션 */
+@media (min-width: 768px) {
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    background: #1a1a2e;
+    padding: 20px 0;
+  }
+  
+  .mobile-container {
+    box-shadow: 
+      0 0 0 8px rgba(255, 255, 255, 0.1),
+      0 25px 50px rgba(0, 0, 0, 0.5);
+    border-radius: 24px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: calc(100vh - 40px);
+    max-height: calc(100vh - 40px);
+  }
 }
 
 /* Glassmorphism utility classes */
@@ -103,4 +168,24 @@ body {
   background: rgba(255, 255, 255, 0.3);
   box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.3);
   transform: translateY(-1px);
+}
+
+/* 스크롤바 스타일링 */
+.content-wrapper::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content-wrapper::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.content-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(197, 149, 96, 0.5);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.content-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(197, 149, 96, 0.7);
 }
