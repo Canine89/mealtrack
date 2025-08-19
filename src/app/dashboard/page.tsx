@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Settings, User, Plus } from 'lucide-react';
+import { Calendar, Settings, Plus } from 'lucide-react';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import NutritionChart from '@/components/ui/NutritionChart';
@@ -14,7 +14,7 @@ import { MealType } from '@/types';
 
 export default function DashboardPage() {
   const { user, signOut } = useAuthStore();
-  const { meals, loading, currentDate, fetchMeals, getTotalCalories, removeMealItem } = useMealStore();
+  const { meals, currentDate, fetchMeals, getTotalCalories, removeMealItem } = useMealStore();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedMealType, setSelectedMealType] = useState<MealType>(MealType.BREAKFAST);
 

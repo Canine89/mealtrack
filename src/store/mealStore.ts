@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { mockMeals, mockFoods } from '@/lib/mockData';
-import { Meal, MealItem, Food, MealType } from '@/types';
+import { Meal, MealItem, MealType } from '@/types';
 
 interface MealState {
   meals: Meal[];
@@ -48,7 +48,7 @@ export const useMealStore = create<MealState>((set, get) => ({
     const calories = Math.round((food.calories_per_100g * quantity) / 100);
 
     // 해당 타입의 기존 식사 찾기
-    let existingMeal = meals.find(m => m.meal_type === mealType);
+    const existingMeal = meals.find(m => m.meal_type === mealType);
     
     const newItem: MealItem = {
       id: `item-${Date.now()}`,

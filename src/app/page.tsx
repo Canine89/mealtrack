@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { Utensils, Heart, TrendingUp } from 'lucide-react';
 import { Button, Card } from '@/components/ui';
 

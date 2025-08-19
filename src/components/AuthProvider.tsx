@@ -9,7 +9,7 @@ interface AuthProviderProps {
 }
 
 export default function AuthProvider({ children }: AuthProviderProps) {
-  const { user, loading, initialized, initialize } = useAuthStore();
+  const { user, initialized, initialize } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
 

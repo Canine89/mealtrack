@@ -27,37 +27,38 @@ export default function StatsPage() {
   const [stats, setStats] = useState<StatsData | null>(null);
 
   useEffect(() => {
+    const calculateStats = () => {
+      // 모든 식사 데이터로부터 통계 계산
+      const totalCalories = meals.reduce((total, meal) => {
+        return total + meal.meal_items.reduce((mealTotal, item) => mealTotal + item.calories, 0);
+      }, 0);
+
+      // 주간 데이터 생성 (임시 데이터)
+      const weeklyData = [
+        { day: '월', calories: 1850 },
+        { day: '화', calories: 2100 },
+        { day: '수', calories: 1950 },
+        { day: '목', calories: 2200 },
+        { day: '금', calories: 1800 },
+        { day: '토', calories: 2050 },
+        { day: '일', calories: 1900 },
+      ];
+
+      setStats({
+        totalDays: 30,
+        averageCalories: Math.round(totalCalories / 7) || 1950,
+        totalCalories,
+        mostActiveDay: '목요일',
+        streakDays: 12,
+        weeklyData
+      });
+    };
+
     if (user && meals.length > 0) {
       calculateStats();
     }
   }, [user, meals, timeRange]);
 
-  const calculateStats = () => {
-    // 모든 식사 데이터로부터 통계 계산
-    const totalCalories = meals.reduce((total, meal) => {
-      return total + meal.meal_items.reduce((mealTotal, item) => mealTotal + item.calories, 0);
-    }, 0);
-
-    // 주간 데이터 생성 (임시 데이터)
-    const weeklyData = [
-      { day: '월', calories: 1850 },
-      { day: '화', calories: 2100 },
-      { day: '수', calories: 1950 },
-      { day: '목', calories: 2200 },
-      { day: '금', calories: 1800 },
-      { day: '토', calories: 2050 },
-      { day: '일', calories: 1900 },
-    ];
-
-    setStats({
-      totalDays: 30,
-      averageCalories: Math.round(totalCalories / 7) || 1950,
-      totalCalories,
-      mostActiveDay: '목요일',
-      streakDays: 12,
-      weeklyData
-    });
-  };
 
   // 전체 영양소 계산
   const getTotalNutrition = () => {

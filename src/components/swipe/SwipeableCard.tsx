@@ -47,7 +47,7 @@ export default function SwipeableCard({
     setIsDragging(true);
   };
 
-  const handleDragEnd = (event: any, info: PanInfo) => {
+  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     setIsDragging(false);
     const threshold = 100;
     
@@ -81,15 +81,6 @@ export default function SwipeableCard({
     }
   };
 
-  const getActionColor = (color: string) => {
-    const colors = {
-      red: 'bg-red-500',
-      blue: 'bg-blue-500', 
-      green: 'bg-green-500',
-      yellow: 'bg-yellow-500'
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
-  };
 
   if (disabled) {
     return (

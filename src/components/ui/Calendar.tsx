@@ -17,9 +17,8 @@ export default function Calendar({ selectedDate, onDateSelect, className = '' }:
   const today = new Date();
   const selected = new Date(selectedDate);
   
-  // 월의 첫 날과 마지막 날
+  // 월의 첫 날
   const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
-  const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
   
   // 달력 시작일 (이전 달의 마지막 주)
   const startDate = new Date(firstDay);

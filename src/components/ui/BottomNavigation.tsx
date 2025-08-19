@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { Home, Calendar, User, TrendingUp } from 'lucide-react';
 
 interface NavItem {
-  icon: React.ComponentType<any>;
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
   path: string;
 }

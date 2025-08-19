@@ -13,8 +13,7 @@ import {
   HelpCircle, 
   LogOut,
   Edit3,
-  Save,
-  X
+  Save
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
