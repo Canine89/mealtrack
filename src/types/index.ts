@@ -42,12 +42,7 @@ export interface Meal {
   meal_items: MealItem[];
 }
 
-export enum MealType {
-  BREAKFAST = 'breakfast',
-  LUNCH = 'lunch', 
-  DINNER = 'dinner',
-  SNACK = 'snack'
-}
+export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 
 export interface MealItem {
   id: string;

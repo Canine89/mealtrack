@@ -16,7 +16,7 @@ export default function DashboardPage() {
   const { user, signOut } = useAuthStore();
   const { meals, currentDate, fetchMeals, getTotalCalories, removeMealItem } = useMealStore();
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedMealType, setSelectedMealType] = useState<MealType>(MealType.BREAKFAST);
+  const [selectedMealType, setSelectedMealType] = useState<MealType>('breakfast');
 
   useEffect(() => {
     if (user) {
