@@ -91,10 +91,10 @@ export default function AddFoodModal({ isOpen, onClose, mealType }: AddFoodModal
     : 0;
 
   const mealTypeNames = {
-    [MealType.BREAKFAST]: '아침',
-    [MealType.LUNCH]: '점심', 
-    [MealType.DINNER]: '저녁',
-    [MealType.SNACK]: '간식'
+    breakfast: '아침',
+    lunch: '점심', 
+    dinner: '저녁',
+    snack: '간식'
   };
 
   return (
