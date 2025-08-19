@@ -1,103 +1,96 @@
-import Image from "next/image";
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { Utensils, Heart, TrendingUp } from 'lucide-react';
+import { Button, Card } from '@/components/ui';
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleGetStarted = () => {
+    router.push('/login');
+  };
+
+  return (
+    <div className="min-h-screen p-4 flex flex-col items-center justify-center">
+      {/* 배경 장식 요소들 */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-pink/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute top-40 right-20 w-24 h-24 bg-lavender/30 rounded-full blur-2xl animate-pulse delay-1000" />
+        <div className="absolute bottom-40 left-20 w-20 h-20 bg-sage/25 rounded-full blur-2xl animate-pulse delay-2000" />
+      </div>
+
+      <div className="relative z-10 max-w-md w-full space-y-8">
+        {/* 헤더 */}
+        <div className="text-center space-y-4">
+          <div className="flex justify-center">
+            <div className="w-16 h-16 glass-card rounded-full flex items-center justify-center">
+              <Utensils className="w-8 h-8 text-white" />
+            </div>
+          </div>
+          <h1 className="text-4xl font-bold text-white">
+            MealTrack
+          </h1>
+          <p className="text-white/80 text-lg">
+            매일의 식단을 아름답게 기록하세요
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* 기능 카드들 */}
+        <div className="space-y-4">
+          <Card glassEffect="medium" hover className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-pink/20 rounded-full flex items-center justify-center">
+                <Heart className="w-6 h-6 text-pink" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold text-lg">식단 관리</h3>
+                <p className="text-white/70 text-sm">슬라이드로 쉽게 관리하는 일일 식단</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card glassEffect="medium" hover className="p-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-sage/20 rounded-full flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-sage" />
+              </div>
+              <div>
+                <h3 className="text-white font-semibold text-lg">영양 추적</h3>
+                <p className="text-white/70 text-sm">칼로리와 영양성분을 한눈에</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* CTA 버튼들 */}
+        <div className="space-y-3">
+          <Button 
+            variant="primary" 
+            size="lg" 
+            className="w-full"
+            onClick={handleGetStarted}
+          >
+            시작하기
+          </Button>
+          <Button 
+            variant="glass" 
+            size="md" 
+            className="w-full"
+            onClick={handleGetStarted}
+          >
+            미리보기
+          </Button>
+        </div>
+
+        {/* 푸터 */}
+        <div className="text-center">
+          <p className="text-white/60 text-sm">
+            Glassmorphism으로 만든 아름다운 식단 앱
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
