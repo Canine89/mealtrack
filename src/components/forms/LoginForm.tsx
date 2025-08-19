@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { Button, Card, Input } from '@/components/ui';
+import { Button, Card } from '@/components/ui';
 import { useAuthStore } from '@/store/authStore';
 
 interface LoginFormProps {
@@ -11,26 +10,16 @@ interface LoginFormProps {
 }
 
 export default function LoginForm({ onToggleMode }: LoginFormProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
-  const { signIn, loading } = useAuthStore();
+  const { signInWithGoogle, loading } = useAuthStore();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleGoogleLogin = async () => {
     setError('');
-
-    if (!email || !password) {
-      setError('이메일과 비밀번호를 입력해주세요.');
-      return;
-    }
-
-    const { error: signInError } = await signIn(email, password);
+    const { error: signInError } = await signInWithGoogle();
     
     if (signInError) {
-      setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.');
+      setError('Google 로그인에 실패했습니다.');
     }
   };
 
@@ -41,38 +30,7 @@ export default function LoginForm({ onToggleMode }: LoginFormProps) {
         <p className="text-white/70">MealTrack에 오신 것을 환영합니다</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <Input
-          type="email"
-          placeholder="이메일"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          icon={<Mail className="w-5 h-5" />}
-          disabled={loading}
-        />
-
-        <div className="relative">
-          <Input
-            type={showPassword ? 'text' : 'password'}
-            placeholder="비밀번호"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            icon={<Lock className="w-5 h-5" />}
-            disabled={loading}
-          />
-          <button
-            type="button"
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/70 hover:text-white transition-colors"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? (
-              <EyeOff className="w-5 h-5" />
-            ) : (
-              <Eye className="w-5 h-5" />
-            )}
-          </button>
-        </div>
-
+      <div className="space-y-6">
         {error && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -84,13 +42,13 @@ export default function LoginForm({ onToggleMode }: LoginFormProps) {
         )}
 
         <Button
-          type="submit"
           variant="primary"
           size="lg"
           className="w-full"
+          onClick={handleGoogleLogin}
           isLoading={loading}
         >
-          로그인
+          Google로 로그인
         </Button>
 
         <div className="text-center">
@@ -99,10 +57,10 @@ export default function LoginForm({ onToggleMode }: LoginFormProps) {
             onClick={onToggleMode}
             className="text-white/70 hover:text-white transition-colors text-sm"
           >
-            계정이 없으신가요? <span className="text-pink font-semibold">회원가입</span>
+            계정이 없으신가요? <span className="text-bright-yellow font-semibold">회원가입</span>
           </button>
         </div>
-      </form>
+      </div>
     </Card>
   );
 }

@@ -53,7 +53,7 @@ export default function AddFoodModal({ isOpen, onClose, mealType }: AddFoodModal
         return;
       }
 
-      setFoods(foods || []);
+      setFoods((foods || []) as Food[]);
     } catch (error) {
       console.error('Error loading foods:', error);
     } finally {
@@ -63,8 +63,7 @@ export default function AddFoodModal({ isOpen, onClose, mealType }: AddFoodModal
 
   // 검색된 음식 필터링
   const filteredFoods = foods.filter(food =>
-    food.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (food.name_en && food.name_en.toLowerCase().includes(searchQuery.toLowerCase()))
+    food.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // 카테고리별 아이콘

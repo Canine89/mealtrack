@@ -15,15 +15,19 @@ interface Profile {
   updated_at: string;
 }
 
+interface AuthError {
+  message: string;
+}
+
 interface AuthState {
   user: User | null;
   profile: Profile | null;
   loading: boolean;
   initialized: boolean;
-  signInWithGoogle: () => Promise<{ error: any }>;
-  signOut: () => Promise<{ error: any }>;
+  signInWithGoogle: () => Promise<{ error: AuthError | null }>;
+  signOut: () => Promise<{ error: AuthError | null }>;
   initialize: () => Promise<void>;
-  updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
+  updateProfile: (updates: Partial<Profile>) => Promise<{ error: AuthError | null }>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -36,7 +40,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true });
     
     try {
-      const { data, error } = await signInWithGoogle();
+      const { error } = await signInWithGoogle();
       
       if (error) {
         set({ loading: false });
@@ -44,7 +48,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
 
       return { error: null };
-    } catch (error) {
+    } catch {
       set({ loading: false });
       return { error: { message: '로그인 중 오류가 발생했습니다.' } };
     }
@@ -63,7 +67,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       
       return { error };
-    } catch (error) {
+    } catch {
       set({ loading: false });
       return { error: { message: '로그아웃 중 오류가 발생했습니다.' } };
     }
@@ -78,7 +82,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ loading: true });
     
     try {
-      const { data, error } = await upsertProfile(user.id, updates);
+      // Ensure email is provided for upsertProfile
+      const profileUpdates = {
+        ...updates,
+        email: updates.email || user.email || ''
+      };
+      const { data, error } = await upsertProfile(user.id, profileUpdates);
       
       if (!error && data) {
         set({ profile: data as Profile, loading: false });
@@ -87,7 +96,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       }
       
       return { error };
-    } catch (error) {
+    } catch {
       set({ loading: false });
       return { error: { message: '프로필 업데이트 중 오류가 발생했습니다.' } };
     }
@@ -126,14 +135,14 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
           set({ 
             user: session.user, 
-            profile: newProfile,
+            profile: newProfile as Profile,
             loading: false, 
             initialized: true 
           });
         } else {
           set({ 
             user: session.user, 
-            profile,
+            profile: profile as Profile,
             loading: false, 
             initialized: true 
           });
@@ -151,7 +160,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
             .eq('id', session.user.id)
             .single();
 
-          set({ user: session.user, profile });
+          set({ user: session.user, profile: profile as Profile });
         } else {
           set({ user: null, profile: null });
         }

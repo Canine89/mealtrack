@@ -109,7 +109,7 @@ export default function AuthPage() {
                 </button>
               </div>
 
-              {isLogin ? <LoginForm /> : <SignUpForm />}
+              {isLogin ? <LoginForm onToggleMode={() => setIsLogin(false)} /> : <SignUpForm onToggleMode={() => setIsLogin(true)} />}
             </div>
           )}
         </motion.div>

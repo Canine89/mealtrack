@@ -42,7 +42,7 @@ export const getCurrentUser = async () => {
 };
 
 // 프로필 생성/업데이트
-export const upsertProfile = async (userId: string, profile: Partial<Database['public']['Tables']['profiles']['Insert']>) => {
+export const upsertProfile = async (userId: string, profile: Omit<Database['public']['Tables']['profiles']['Insert'], 'id' | 'updated_at'>) => {
   const { data, error } = await supabase
     .from('profiles')
     .upsert({

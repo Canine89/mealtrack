@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
-import { Meal, MealItem, MealType, Food } from '@/types';
+import { Meal, MealType, Food } from '@/types';
 import { Database } from '@/types/database';
 import { toast } from '@/store/toastStore';
 
@@ -43,14 +43,11 @@ const transformMealFromDB = (mealRow: MealRow, itemsWithFood: (MealItemRow & { f
     food: {
       id: item.food.id,
       name: item.food.name,
-      name_en: item.food.name_en || '',
       category: item.food.category,
       calories_per_100g: item.food.calories_per_100g,
       protein_per_100g: item.food.protein_per_100g,
       carbs_per_100g: item.food.carbs_per_100g,
       fat_per_100g: item.food.fat_per_100g,
-      fiber_per_100g: item.food.fiber_per_100g || 0,
-      sodium_per_100g: item.food.sodium_per_100g || 0,
       created_at: item.food.created_at,
     } as Food
   }))
@@ -229,7 +226,6 @@ export const useMealStore = create<MealState>((set, get) => ({
       }
 
       // 4. 상태 새로고침
-      const { user } = get() as any; // 임시로 user 정보를 가져올 방법이 필요합니다
       if (typeof window !== 'undefined') {
         // 현재 로그인된 사용자 정보를 가져와서 새로고침
         const { data: { user: currentUser } } = await supabase.auth.getUser();

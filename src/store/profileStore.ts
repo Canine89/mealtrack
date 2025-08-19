@@ -26,7 +26,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
     try {
       const profile = await getUserProfile(userId);
       set({ profile, loading: false });
-    } catch (error) {
+    } catch {
       set({ 
         error: '프로필을 불러오는데 실패했습니다.', 
         loading: false 
@@ -50,7 +50,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         });
         return false;
       }
-    } catch (error) {
+    } catch {
       set({ 
         error: '프로필 업데이트 중 오류가 발생했습니다.', 
         loading: false 
@@ -75,7 +75,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         });
         return false;
       }
-    } catch (error) {
+    } catch {
       set({ 
         error: '프로필 생성 중 오류가 발생했습니다.', 
         loading: false 
