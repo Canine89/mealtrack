@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onDrag' | 'onDragEnd' | 'onDragStart'> {
   children: ReactNode;
   variant?: 'primary' | 'secondary' | 'glass';
   size?: 'sm' | 'md' | 'lg';

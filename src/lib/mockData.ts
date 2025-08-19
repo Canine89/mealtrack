@@ -1,5 +1,5 @@
 import { User } from '@supabase/supabase-js';
-import { Food, Meal, MealItem, FoodCategory, MealType } from '@/types';
+import { Food, Meal, MealItem, FoodCategory } from '@/types';
 
 // Mock user data
 export const mockUser: User = {
